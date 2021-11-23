@@ -1,0 +1,46 @@
+Failure # 1 (occurred at 2021-11-23_18-17-41)
+Traceback (most recent call last):
+  File "C:\Users\danid\anaconda3\lib\site-packages\ray\tune\trial_runner.py", line 890, in _process_trial
+    results = self.trial_executor.fetch_result(trial)
+  File "C:\Users\danid\anaconda3\lib\site-packages\ray\tune\ray_trial_executor.py", line 788, in fetch_result
+    result = ray.get(trial_future[0], timeout=DEFAULT_GET_TIMEOUT)
+  File "C:\Users\danid\anaconda3\lib\site-packages\ray\_private\client_mode_hook.py", line 105, in wrapper
+    return func(*args, **kwargs)
+  File "C:\Users\danid\anaconda3\lib\site-packages\ray\worker.py", line 1625, in get
+    raise value.as_instanceof_cause()
+ray.exceptions.RayTaskError(TuneError): [36mray::ImplicitFunc.train_buffered()[39m (pid=11448, ip=127.0.0.1, repr=<ray.tune.function_runner.ImplicitFunc object at 0x00000232DA749EE0>)
+  File "python\ray\_raylet.pyx", line 565, in ray._raylet.execute_task
+  File "python\ray\_raylet.pyx", line 569, in ray._raylet.execute_task
+  File "python\ray\_raylet.pyx", line 519, in ray._raylet.execute_task.function_executor
+  File "C:\Users\danid\anaconda3\lib\site-packages\ray\_private\function_manager.py", line 576, in actor_method_executor
+    return method(__ray_actor, *args, **kwargs)
+  File "C:\Users\danid\anaconda3\lib\site-packages\ray\util\tracing\tracing_helper.py", line 451, in _resume_span
+    return method(self, *_args, **_kwargs)
+  File "C:\Users\danid\anaconda3\lib\site-packages\ray\tune\trainable.py", line 224, in train_buffered
+    result = self.train()
+  File "C:\Users\danid\anaconda3\lib\site-packages\ray\util\tracing\tracing_helper.py", line 451, in _resume_span
+    return method(self, *_args, **_kwargs)
+  File "C:\Users\danid\anaconda3\lib\site-packages\ray\tune\trainable.py", line 283, in train
+    result = self.step()
+  File "C:\Users\danid\anaconda3\lib\site-packages\ray\util\tracing\tracing_helper.py", line 451, in _resume_span
+    return method(self, *_args, **_kwargs)
+  File "C:\Users\danid\anaconda3\lib\site-packages\ray\tune\function_runner.py", line 381, in step
+    self._report_thread_runner_error(block=True)
+  File "C:\Users\danid\anaconda3\lib\site-packages\ray\util\tracing\tracing_helper.py", line 451, in _resume_span
+    return method(self, *_args, **_kwargs)
+  File "C:\Users\danid\anaconda3\lib\site-packages\ray\tune\function_runner.py", line 528, in _report_thread_runner_error
+    raise TuneError(
+ray.tune.error.TuneError: Trial raised an exception. Traceback:
+[36mray::ImplicitFunc.train_buffered()[39m (pid=11448, ip=127.0.0.1, repr=<ray.tune.function_runner.ImplicitFunc object at 0x00000232DA749EE0>)
+  File "C:\Users\danid\anaconda3\lib\site-packages\ray\tune\function_runner.py", line 262, in run
+    self._entrypoint()
+  File "C:\Users\danid\anaconda3\lib\site-packages\ray\tune\function_runner.py", line 330, in entrypoint
+    return self._trainable_func(self.config, self._status_reporter,
+  File "C:\Users\danid\anaconda3\lib\site-packages\ray\util\tracing\tracing_helper.py", line 451, in _resume_span
+    return method(self, *_args, **_kwargs)
+  File "C:\Users\danid\anaconda3\lib\site-packages\ray\tune\function_runner.py", line 599, in _trainable_func
+    output = fn()
+  File "C:/Users/danid/Desktop/project_B/TryingResNet.py", line 294, in second_train
+    tune.report(loss=(val_loss / val_steps))
+ZeroDivisionError: float division by zero
+
