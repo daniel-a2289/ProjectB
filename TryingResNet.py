@@ -347,7 +347,11 @@ def test_accuracy(features, targets, window_size, model, device="cpu",
             total_dis = total_dis + check_pos_new
             total_out = total_out + test_outputs.item()
     total_error = torch.abs(total_out - total_dis) * 100 / total_dis
-    print('test MSE error: {:.4f} | Relative error: {:.4f}% |'.format(test_error.item()/num, total_error))
+    res_string = 'test MSE error: {:.4f} | Relative error: {:.4f}% |\n'.format(test_error.item()/num, total_error)
+    print(res_string)
+    f = open("finite_results.txt", "a")
+    f.write(res_string)
+    f.close()
     return total_error, output, label
 
 
@@ -614,6 +618,7 @@ def main(num_samples=10, max_num_epochs=50):
         test_error, test_outputs, check_pos_new = test_accuracy(acce_test, pos_test, window_size,
                                                                 best_trained_model, device="cpu",
                                                                 abs_value=combination_methods["abs_value"])
+        print(check_pos_new)
         print("Best trial test set relative error: {}".format(test_error))
         plt.plot(np.arange(0, len(test_outputs)), test_outputs)
         plt.plot(np.arange(0, len(test_outputs)), check_pos_new)
@@ -629,4 +634,4 @@ def main(num_samples=10, max_num_epochs=50):
 
 if __name__ == "__main__":
     # You can change the number of GPUs per trial here:
-    main(num_samples=10, max_num_epochs=20)
+    main(num_samples=2, max_num_epochs=2)
