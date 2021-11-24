@@ -1,3 +1,0 @@
-loss,time_this_iter_s,should_checkpoint,done,timesteps_total,episodes_total,training_iteration,trial_id,experiment_id,date,timestamp,time_total_s,pid,hostname,node_ip,time_since_restore,timesteps_since_restore,iterations_since_restore
-0.918676753838857,0.0769343376159668,True,False,,,1,e0ea0_00007,3eeaca7c02194cacb3089f58be87b294,2021-11-23_18-17-55,1637684275,0.0769343376159668,15108,LAPTOP-NB2CSH03,127.0.0.1,0.0769343376159668,0,1
-0.928074300289154,0.07702779769897461,True,True,,,2,e0ea0_00007,3eeaca7c02194cacb3089f58be87b294,2021-11-23_18-17-55,1637684275,0.1539621353149414,15108,LAPTOP-NB2CSH03,127.0.0.1,0.1539621353149414,0,2
