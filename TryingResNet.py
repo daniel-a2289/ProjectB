@@ -5,6 +5,8 @@ import argparse
 import numpy as np
 import pandas as pd
 from numpy.linalg import norm
+import matplotlib
+matplotlib.use('pdf')
 import matplotlib.pyplot as plt
 import time
 import torch
@@ -46,8 +48,10 @@ pos[:, 0] = pos[:, 0]/1000
 '''
 
 torch.manual_seed(30)
+# torch.initial_seed(30)
 np.random.seed(30)
 random.seed(30)
+
 MODEL_WEIGHTS_PATH = os.path.join(os.getcwd(), "best_model", "parameters.pt")
 
 
@@ -67,14 +71,17 @@ def train_data(config, train_ds, save_string, abs_value=False, window_size=50, n
     # model = SimpleNet(config["out1"], config["out2"], config["out3"], abs_flag=abs_value)
     model = SimpleNet(window_size, config["out1"], config["out2"], abs_flag=abs_value)
     # device
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    # device = "cpu"
+    device = torch.device("cpu")
+
     # loss criterion
     criterion = nn.MSELoss()
     # train and validation
     train_set_size = int(len(train_ds) * 0.8)
     train_subset, val_subset = random_split(train_ds, [train_set_size, len(train_ds) - train_set_size])
-    train_loader = DataLoader(train_subset, batch_size=int(config["batch_size"] * window_size), shuffle=True)
-    val_loader = DataLoader(val_subset, batch_size=int(config["batch_size"] * window_size), shuffle=True)
+    train_loader = DataLoader(train_subset, batch_size=int(config["batch_size"] * window_size), shuffle=False)
+    val_loader = DataLoader(val_subset, batch_size=int(config["batch_size"] * window_size), shuffle=False)
     # optimizer
     # optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     optimizer = torch.optim.SGD(model.parameters(), lr=config["lr"], momentum=0.9)
@@ -197,14 +204,15 @@ def second_train(config, train_ds, save_string, curr_weights, abs_value=False, w
     model.norm2.bias.requires_grad = False
 
     # device
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cpu")
     # loss criterion
     criterion = nn.MSELoss()
     # train and validation
     train_set_size = int(len(train_ds) * 0.8)
     train_subset, val_subset = random_split(train_ds, [train_set_size, len(train_ds) - train_set_size])
-    train_loader = DataLoader(train_subset, batch_size=int(config["batch_size"] * window_size), shuffle=True)
-    val_loader = DataLoader(val_subset, batch_size=int(config["batch_size"] * window_size), shuffle=True)
+    train_loader = DataLoader(train_subset, batch_size=int(config["batch_size"] * window_size), shuffle=False)
+    val_loader = DataLoader(val_subset, batch_size=int(config["batch_size"] * window_size), shuffle=False)
     # optimizer
     # optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     # optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), lr=config["lr"], momentum=0.9)
@@ -266,7 +274,7 @@ def second_train(config, train_ds, save_string, curr_weights, abs_value=False, w
 
         # validation loss
         val_loss = 0.0
-        val_steps = 0
+        val_steps = 1
         total = 0
         for features, targets in val_loader:
             with torch.no_grad():
@@ -329,6 +337,7 @@ def test_accuracy(features, targets, window_size, model, device="cpu",
             output.append(test_outputs)
             check_pos_new = torch.max(torch.sum(torch.norm(torch.from_numpy(targets), dim=1).float()
                                       [i * window_size:window_size * (i + 1)]), torch.tensor(0.0001))
+
             label.append(check_pos_new)
             log = 'Step: {} | Output: {:.4f} |'.format(i, test_outputs.item())
             log += ' New position: {:.4f} |'.format(check_pos_new)
@@ -473,7 +482,7 @@ def main(num_samples=10, max_num_epochs=50):
         "average": False,
         "abs_value": True
     }
-    for elem in np.arange(30, 40, 5):
+    for elem in np.arange(50, 100, 10):
         window_size = elem
         num_epochs = 50
         train_ds, acce_test, pos_test, save_string = data_acquire(train_test_options, combination_methods, window_size)
@@ -482,7 +491,7 @@ def main(num_samples=10, max_num_epochs=50):
         config = {
             "out1": tune.sample_from(lambda _: 2**np.random.randint(2, 9)),
             "out2": tune.sample_from(lambda _: 2**np.random.randint(2, 9)),
-            "lr": tune.loguniform(1e-4, 1e-1),
+            "lr": tune.loguniform(1e-6, 1e-4),
             "batch_size": tune.choice([2, 4, 8, 16, 32, 64])
         }
 
@@ -515,9 +524,9 @@ def main(num_samples=10, max_num_epochs=50):
         best_trained_model = SimpleNet(window_size, best_trial.config["out1"], best_trial.config["out2"],
                                        abs_flag=combination_methods["abs_value"])
         # best_trained_model = SimpleNet(best_trial.config["out1"], best_trial.config["out2"], abs_flag=abs_value)
-        device = "cpu"
-        if torch.cuda.is_available():
-            device = "cuda:0"
+        device = torch.device("cpu")
+        # if torch.cuda.is_available():
+        #     device = "cuda:0"
         best_trained_model.to(device)
 
         best_checkpoint_dir = best_trial.checkpoint.value
@@ -531,10 +540,10 @@ def main(num_samples=10, max_num_epochs=50):
         plt.plot(np.arange(0, len(test_outputs)), check_pos_new)
         plt.xlabel("Step Number")
         plt.ylabel("Position")
-        plt.title("Test Output and Real Position")
+        plt.title(f"Test Output and Real Position for {window_size} steps")
         plt.legend(["Test Output", "Real Position"])
         plt.grid()
-        plt.savefig("./our_checkpoints/graphs_" + save_string + ".png")
+        plt.savefig("./our_checkpoints/graphs_" + save_string + ".pdf")
         plt.clf()
         shutdown()
         torch.save(best_trained_model.state_dict(), MODEL_WEIGHTS_PATH)
@@ -555,12 +564,12 @@ def main(num_samples=10, max_num_epochs=50):
             "ridi_test": False
         }
         window_size = window_size
-        num_epochs = 15
+        num_epochs = 10
         train_ds, acce_test, pos_test, save_string = data_acquire(second_train_options, combination_methods, window_size)
         saved_weights = torch.load(MODEL_WEIGHTS_PATH)
         init(object_store_memory=8 * 10 ** 7, num_cpus=1, num_gpus=1, _memory=5 * 10 ** 9)
         config = {
-            "lr": tune.loguniform(1e-8, 1e-3),
+            "lr": tune.loguniform(1e-6, 1e-2),
             "batch_size": tune.choice([4, 8, 16, 32])
         }
 
@@ -569,7 +578,7 @@ def main(num_samples=10, max_num_epochs=50):
         scheduler = ASHAScheduler(
             metric="loss",
             mode="min",
-            max_t=max_num_epochs,
+            max_t=num_epochs,
             grace_period=1,
             reduction_factor=2)
         result = tune.run(
@@ -594,9 +603,9 @@ def main(num_samples=10, max_num_epochs=50):
                                        out2=saved_weights.get('conv2.bias').shape[0],
                                        abs_flag=combination_methods["abs_value"])
         # best_trained_model = SimpleNet(best_trial.config["out1"], best_trial.config["out2"], abs_flag=abs_value)
-        device = "cpu"
-        if torch.cuda.is_available():
-            device = "cuda:0"
+        device = torch.device("cpu")
+        # if torch.cuda.is_available():
+        #     device = "cuda:0"
         best_trained_model.to(device)
 
         best_checkpoint_dir = best_trial.checkpoint.value
@@ -610,14 +619,14 @@ def main(num_samples=10, max_num_epochs=50):
         plt.plot(np.arange(0, len(test_outputs)), check_pos_new)
         plt.xlabel("Step Number")
         plt.ylabel("Position")
-        plt.title("Test Output and Real Position")
+        plt.title(f"Test Output and Real Position over {window_size} steps")
         plt.legend(["Test Output", "Real Position"])
         plt.grid()
-        plt.savefig("./our_second_checkpoints/graphs_" + save_string + ".png")
+        plt.savefig("./our_second_checkpoints/graphs_" + save_string + ".pdf")
         plt.clf()
         shutdown()
 
 
 if __name__ == "__main__":
     # You can change the number of GPUs per trial here:
-    main(num_samples=10, max_num_epochs=50)
+    main(num_samples=10, max_num_epochs=20)
