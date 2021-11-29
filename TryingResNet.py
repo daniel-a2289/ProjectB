@@ -319,7 +319,7 @@ def second_train(config, train_ds, save_string, curr_weights, abs_value=False, w
 
 
 def test_accuracy(features, targets, window_size, model, device="cpu",
-                  abs_value=False, criterion=nn.MSELoss()):
+                  abs_value=False, criterion=nn.MSELoss(), mode=False):
     if abs_value:
         in_channel = 1
     else:
@@ -337,7 +337,6 @@ def test_accuracy(features, targets, window_size, model, device="cpu",
             output.append(test_outputs)
             check_pos_new = torch.max(torch.sum(torch.norm(torch.from_numpy(targets), dim=1).float()
                                       [i * window_size:window_size * (i + 1)]), torch.tensor(0.0001))
-
             label.append(check_pos_new)
             log = 'Step: {} | Output: {:.4f} |'.format(i, test_outputs.item())
             log += ' New position: {:.4f} |'.format(check_pos_new)
@@ -347,7 +346,13 @@ def test_accuracy(features, targets, window_size, model, device="cpu",
             total_dis = total_dis + check_pos_new
             total_out = total_out + test_outputs.item()
     total_error = torch.abs(total_out - total_dis) * 100 / total_dis
-    print('test MSE error: {:.4f} | Relative error: {:.4f}% |'.format(test_error.item()/num, total_error))
+    res_string = 'test MSE error: {:.4f} | Relative error: {:.4f}% |'.format(test_error.item()/num, total_error)
+    res_string = "\n" + res_string
+    print(res_string)
+    f = open("finite_results.txt", "a")
+    f.write(res_string)
+    f.close()
+
     return total_error, output, label
 
 
@@ -482,7 +487,7 @@ def main(num_samples=10, max_num_epochs=50):
         "average": False,
         "abs_value": True
     }
-    for elem in np.arange(50, 100, 10):
+    for elem in np.arange(50, 110, 10):
         window_size = elem
         num_epochs = 50
         train_ds, acce_test, pos_test, save_string = data_acquire(train_test_options, combination_methods, window_size)
@@ -613,13 +618,13 @@ def main(num_samples=10, max_num_epochs=50):
         best_trained_model.load_state_dict(model_state)
         test_error, test_outputs, check_pos_new = test_accuracy(acce_test, pos_test, window_size,
                                                                 best_trained_model, device="cpu",
-                                                                abs_value=combination_methods["abs_value"])
+                                                                abs_value=combination_methods["abs_value"], mode=True)
         print("Best trial test set relative error: {}".format(test_error))
         plt.plot(np.arange(0, len(test_outputs)), test_outputs)
         plt.plot(np.arange(0, len(test_outputs)), check_pos_new)
         plt.xlabel("Step Number")
         plt.ylabel("Position")
-        plt.title(f"Test Output and Real Position over {window_size} steps")
+        plt.title(f"Test Output and Real Position")
         plt.legend(["Test Output", "Real Position"])
         plt.grid()
         plt.savefig("./our_second_checkpoints/graphs_" + save_string + ".pdf")
@@ -629,4 +634,4 @@ def main(num_samples=10, max_num_epochs=50):
 
 if __name__ == "__main__":
     # You can change the number of GPUs per trial here:
-    main(num_samples=10, max_num_epochs=20)
+    main(num_samples=10, max_num_epochs=15)

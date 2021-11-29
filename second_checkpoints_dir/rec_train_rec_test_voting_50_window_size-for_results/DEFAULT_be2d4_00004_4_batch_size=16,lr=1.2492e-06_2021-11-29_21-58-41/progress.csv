@@ -1,0 +1,2 @@
+loss,time_this_iter_s,should_checkpoint,done,timesteps_total,episodes_total,training_iteration,trial_id,experiment_id,date,timestamp,time_total_s,pid,hostname,node_ip,time_since_restore,timesteps_since_restore,iterations_since_restore
+0.7777578035990397,0.14630889892578125,True,True,,,1,be2d4_00004,a5b8bbbc50ad4b38b04c019e85cd4dad,2021-11-29_21-58-41,1638215921,0.14630889892578125,2278,isl-titan,132.68.39.110,0.14630889892578125,0,1

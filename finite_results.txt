@@ -1,0 +1,53 @@
+average
+test MSE error: 1.0942 | Relative error: 1.2057% |
+test MSE error: 0.0007 | Relative error: 25.0288% |
+test MSE error: 1.3785 | Relative error: 5.9243% |
+test MSE error: 0.0056 | Relative error: 6.3144% |
+test MSE error: 1.6323 | Relative error: 3.0705% |
+test MSE error: 0.0799 | Relative error: 146.9625% |
+test MSE error: 1.9552 | Relative error: 2.8848% |
+test MSE error: 0.1703 | Relative error: 302.4160% |
+test MSE error: 2.2937 | Relative error: 2.5023% |
+test MSE error: 0.0108 | Relative error: 10.6398% |
+test MSE error: 2.6397 | Relative error: 2.9379% |
+test MSE error: 0.2968 | Relative error: 6.1427% |
+average, abs
+test MSE error: 1.1020 | Relative error: 7.5856% |
+test MSE error: 0.0019 | Relative error: 27.3063% |
+test MSE error: 1.3780 | Relative error: 6.3219% |
+test MSE error: 0.0209 | Relative error: 190.5423% |
+test MSE error: 1.6899 | Relative error: 14.1428% |
+test MSE error: 1.0693 | Relative error: 10.4410% |
+test MSE error: 1.9390 | Relative error: 10.8409% |
+test MSE error: 2.3542 | Relative error: 8.9621% |
+test MSE error: 2.2639 | Relative error: 7.8958% |
+test MSE error: 3.3438 | Relative error: 16.3133% |
+test MSE error: 3.4732 | Relative error: 28.8401% |
+test MSE error: 1.3636 | Relative error: 11.2616% |
+voting
+test MSE error: 1.1228 | Relative error: 2.0167% |
+test MSE error: 0.0003 | Relative error: 6.6646% |
+test MSE error: 1.4092 | Relative error: 1.8000% |
+test MSE error: 1.3394 | Relative error: 8.1600% |
+test MSE error: 1.6362 | Relative error: 3.1545% |
+test MSE error: 0.0375 | Relative error: 217.6484% |
+test MSE error: 1.9123 | Relative error: 2.0067% |
+test MSE error: 0.9307 | Relative error: 2.9824% |
+test MSE error: 2.9878 | Relative error: 6.1232% |
+test MSE error: 0.0018 | Relative error: 11.3136% |
+test MSE error: 2.7625 | Relative error: 5.6360% |
+test MSE error: 0.4342 | Relative error: 733.6071% |
+voting,abs
+
+test MSE error: 1.1398 | Relative error: 4.5380% |
+test MSE error: 0.0002 | Relative error: 5.2206% |
+test MSE error: 1.3766 | Relative error: 4.6191% |
+test MSE error: 2.7402 | Relative error: 6.7455% |
+test MSE error: 1.6493 | Relative error: 9.9908% |
+test MSE error: 0.1204 | Relative error: 272.0103% |
+test MSE error: 1.8880 | Relative error: 7.0051% |
+test MSE error: 1.7041 | Relative error: 1.4794% |
+test MSE error: 2.3717 | Relative error: 12.3499% |
+test MSE error: 1.4412 | Relative error: 23.2451% |
+test MSE error: 2.9115 | Relative error: 14.9497% |
+test MSE error: 4.0704 | Relative error: 15.8289% |
