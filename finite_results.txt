@@ -51,3 +51,37 @@ test MSE error: 2.3717 | Relative error: 12.3499% |
 test MSE error: 1.4412 | Relative error: 23.2451% |
 test MSE error: 2.9115 | Relative error: 14.9497% |
 test MSE error: 4.0704 | Relative error: 15.8289% |
+test MSE error: 1.1286 | Relative error: 5.6873% |
+test MSE error: 1.2077 | Relative error: 16.3998% |
+test MSE error: 0.0279 | Relative error: 44.5439% |
+
+
+Single imu #0 abs
+
+test MSE error: 1.1361 | Relative error: 7.2232% |
+test MSE error: 0.0623 | Relative error: 84.8842% |
+test MSE error: 1.3771 | Relative error: 8.7362% |
+test MSE error: 0.0616 | Relative error: 49.1624% |
+test MSE error: 1.6877 | Relative error: 14.6624% |
+test MSE error: 0.0774 | Relative error: 48.2339% |
+test MSE error: 1.9452 | Relative error: 4.5249% |
+test MSE error: 0.0617 | Relative error: 8.1145% |
+test MSE error: 2.6036 | Relative error: 1.8390% |
+test MSE error: 0.2547 | Relative error: 10.2629% |
+test MSE error: 2.5345 | Relative error: 6.8996% |
+test MSE error: 0.0636 | Relative error: 11.9386% |
+
+Single imu #0
+
+test MSE error: 1.0940 | Relative error: 3.8416% |
+test MSE error: 0.0077 | Relative error: 64.7310% |
+test MSE error: 1.3309 | Relative error: 2.1217% |
+test MSE error: 1.8383 | Relative error: 1465.0184% |
+test MSE error: 1.6492 | Relative error: 3.3276% |
+test MSE error: 0.1018 | Relative error: 502.8398% |
+test MSE error: 1.9294 | Relative error: 2.1014% |
+test MSE error: 3.9145 | Relative error: 1559.3596% |
+test MSE error: 2.4946 | Relative error: 2.2788% |
+test MSE error: 0.0518 | Relative error: 47.7983% |
+test MSE error: 2.7057 | Relative error: 2.2268% |
+test MSE error: 5.2299 | Relative error: 2644.3333% |
