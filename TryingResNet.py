@@ -6,7 +6,6 @@ import numpy as np
 import pandas as pd
 from numpy.linalg import norm
 import matplotlib
-matplotlib.use('pdf')
 import matplotlib.pyplot as plt
 import time
 import torch
@@ -25,41 +24,13 @@ from ray import tune, init, shutdown
 from ray.tune import CLIReporter
 from ray.tune.schedulers import ASHAScheduler
 from functools import partial
-
-# save_string = "tang_handheld1_modified"
-# data = pd.read_csv('C:/Users/liorb/OneDrive - Technion/Documents/Project B - 044169/data_publish_v2/' + save_string + '/processed/data.csv')
-# data1 = pd.read_csv('C:/Users/liorb/Documents/ProjectB/modified_ridi/' + save_string + '.csv')
-# save_string = "tang_handheld2_modified"
-# data2 = pd.read_csv('C:/Users/liorb/Documents/ProjectB/modified_ridi/' + save_string + '.csv')
-# save_string = "tang_handheld1+2_modified"
-
-'''
-#save_string = 'test'
-names = ['acce_x', 'acce_y', 'acce_z']
-#data_acce = pd.read_csv(r'C:/Users\liorb\Documents\ProjectB\Recordings\second\acce_data1.csv', names=names)
-#data_acce = pd.read_csv(r'C:/Users\liorb\OneDrive - Technion\Documents\Project B - 044169\Recordings\acc_new.csv', names=names)
-acce = data_acce.values
-data_pos = pd.read_csv(r'C:/Users\liorb\OneDrive - Technion\Documents\Project B - 044169\Recordings\accurate_position.csv', header=1)
-data_pos = data_pos.iloc[0:440]
-pos = data_pos[['Height_GNSS', 'Long_GNSS', 'Lat_GNSS']].values
-pos[:, 1] = pos[:, 1]/1e9
-pos[:, 2] = pos[:, 2]/1e9
-pos[:, 0] = pos[:, 0]/1000
-'''
+matplotlib.use('pdf')
 
 torch.manual_seed(30)
-# torch.initial_seed(30)
 np.random.seed(30)
 random.seed(30)
 
 MODEL_WEIGHTS_PATH = os.path.join(os.getcwd(), "best_model", "parameters.pt")
-
-
-def kernel_size_choice(dim):
-    kernel_org_options = np.array([3, 5, 7])
-    bool_arr = np.array([calc_conv_dim(dim, 1, 1, elem, 1) >= 0 for elem in kernel_org_options])
-    kernel_size_options = kernel_org_options[bool_arr]
-    return kernel_size_options
 
 
 def train_data(config, train_ds, save_string, abs_value=False, window_size=50, num_epochs=50, data_dir=None,
@@ -335,8 +306,8 @@ def test_accuracy(features, targets, window_size, model, device="cpu",
             test_outputs = model(torch.reshape(torch.from_numpy(features[i * window_size:window_size * (i + 1)]),
                                                (1, in_channel, window_size)).float().to(device))
             output.append(test_outputs)
-            check_pos_new = torch.max(torch.sum(torch.norm(torch.from_numpy(targets), dim=1).float()
-                                      [i * window_size:window_size * (i + 1)]), torch.tensor(0.0001))
+            check_pos_new = torch.max(torch.sum(torch.norm(torch.from_numpy(targets), dim=1).float()[i * window_size:window_size * (i + 1)]), torch.tensor(0.0001))
+
             label.append(check_pos_new)
             log = 'Step: {} | Output: {:.4f} |'.format(i, test_outputs.item())
             log += ' New position: {:.4f} |'.format(check_pos_new)
@@ -385,6 +356,16 @@ def data_acquire(train_test_option, combination_method, window_size):
             else:
                 train_acce = [pd.read_csv(os.path.join(os.getcwd(), "Processed", "avg", f"avg_method_file{elem}.csv"),
                                           header=None) for elem in train_index]
+        else:  # using a single imu
+            imu_num = int(combination_method["single_imu"])
+            if combination_method["abs_value"]:
+                train_acce = [pd.read_csv(
+                    os.path.join(os.getcwd(), "Processed", "abs_pre_pick_mimu", f"abs_acc_method_file{elem}.csv"),
+                    header=None, usecols=[imu_num]) for elem in train_index]
+            else:
+                train_acce = [
+                    pd.read_csv(os.path.join(os.getcwd(), "Recordings", "second", f"acce_data{elem}.csv"),
+                                header=None, usecols=[imu_num*3, imu_num*3+1, imu_num*3+2]) for elem in train_index]
 
         train_pos = [pd.read_csv(os.path.join(os.getcwd(), "Recordings", "second", "position_modified",
                                               f"position_step{elem}_modified.csv"), header=None) for elem in
@@ -435,6 +416,16 @@ def data_acquire(train_test_option, combination_method, window_size):
             else:
                 test = [pd.read_csv(os.path.join(os.getcwd(), "Processed", "avg", f"avg_method_file{elem}.csv"),
                                     header=None) for elem in rec_test_index]
+        else:  # using a single imu
+            imu_num = int(combination_method["single_imu"])
+            if combination_method["abs_value"]:
+                test = [pd.read_csv(
+                    os.path.join(os.getcwd(), "Processed", "abs_pre_pick_mimu", f"abs_acc_method_file{elem}.csv"),
+                    header=None, usecols=[imu_num]) for elem in rec_test_index]
+            else:
+                test = [
+                    pd.read_csv(os.path.join(os.getcwd(), "Recordings", "second", f"acce_data{elem}.csv"),
+                                header=None, usecols=[imu_num*3, imu_num*3+1, imu_num*3+2]) for elem in rec_test_index]
 
         test_label = [pd.read_csv(os.path.join(os.getcwd(), "Recordings", "second", "position_modified",
                                                f"position_step{elem}_modified.csv"), header=None) for elem in
@@ -483,9 +474,9 @@ def main(num_samples=10, max_num_epochs=50):
 
     # combination method for mimu
     combination_methods = {
-        "voting": True,
+        "voting": False,
         "average": False,
-        "abs_value": True
+        "abs_value": False
     }
     for elem in np.arange(50, 110, 10):
         window_size = elem
@@ -557,9 +548,10 @@ def main(num_samples=10, max_num_epochs=50):
         # ******************************* #
         # ******************************* #
         combination_methods = {
-            "voting": True,
+            "voting": False,
             "average": False,
-            "abs_value": True
+            "abs_value": False,
+            "single_imu": 0
         }
 
         second_train_options = {
